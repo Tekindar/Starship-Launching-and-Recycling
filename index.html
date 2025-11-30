@@ -8,8 +8,477 @@
         *{margin:0; padding:0;}
         html,body {width: 100%;height: 100%;overflow: hidden;}
     </style>
-  <script type="module" crossorigin src="/Starship-Launching-and-Recycling/assets/index-DgGisnr_.js"></script>
 </head>
 <body>
+    <script type="module">
+        import * as THREE from "three";
+        import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
+        import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+
+        //create variables
+        const interval = 40.0;
+        var time = -2.0;
+        var Scene = 1;
+        const degree = Math.PI / 180;
+        var clip = 0;
+
+            //for user control
+        var paused = false;
+        var speed = 1
+
+
+
+        // Create a scene
+        const scene = new THREE.Scene();
+
+        const vent = createParticleSystem(0xffffff, 0.03, 0.6);
+        const exhaust = createParticleSystem(0xffaa33, 0.015, 0.9);
+        const exhaust2 = createParticleSystem(0xffaa33, 0.015, 0.9);
+
+        // Create a camera
+        const camera = new THREE.PerspectiveCamera(105, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 0.2, 4.5);
+        camera.far = 20000
+        //camera.position.set(0, 8, 0)
+        camera.rotation.set(-0.2, 0, 0);
+        //camera.lookAt(0, 0, 0)
+
+        // Create Elements
+        const light1 = new THREE.DirectionalLight(0xffffff, 0.5);
+        light1.position.set(-2, 4, -1);
+        //scene.add(light1);
+
+
+        const light2 = new THREE.DirectionalLight(0xffffff, 2);
+        light2.position.set(5, 1, 3);
+        light2.castShadow = true;
+        scene.add(light2);
+
+        const light3 = new THREE.DirectionalLight(0xffffff, 4);
+        light3.position.set(5, 1, 1);
+        light3.castShadow = true;
+        scene.add(light3);
+
+        const light4 = new THREE.PointLight(0xFF9A0D, 0, 100);
+        light4.position.set(0,0.5,0)
+        scene.add(light4);
+
+        const textureLoader = new THREE.TextureLoader();
+        const skyTexture = textureLoader.load('assets/sky.jpeg');
+        const skyMaterialOne = new THREE.MeshStandardMaterial({ //color: 0xff000, 
+            map: skyTexture, side: THREE.BackSide, emissive: 0xA1E9F7, emissiveIntensity: 0.8});
+
+        const skyGeometryOne = new THREE.SphereGeometry(20, 20, 20);
+        const skyMeshOne = new THREE.Mesh(skyGeometryOne, skyMaterialOne);
+        skyMeshOne.rotation.set(0, 0.5, 0.1);
+        skyMeshOne.position.set(0, 0, 5);
+        scene.add(skyMeshOne);
+
+
+        const skyTextureTwo = textureLoader.load('assets/sky2.jpeg');
+        const skyMaterialTwo = new THREE.MeshStandardMaterial({ //color: 0xff000, 
+            map: skyTextureTwo, side: THREE.BackSide, emissive: 0xA1E9F7, emissiveIntensity: 0.8});
+
+        const skyGeometryTwo = new THREE.SphereGeometry(80, 80, 20);
+        const skyMeshTwo = new THREE.Mesh(skyGeometryTwo, skyMaterialTwo);
+        skyMeshTwo.rotation.set(0, -120 * degree, 0);
+        skyMeshTwo.position.set(-1000, -1000, -1000);
+        scene.add(skyMeshTwo);
+
+
+        // Create a renderer
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Load models
+        const loader = new GLTFLoader();
+
+        var stationaries = null;
+        loader.load(
+            'assets/stationaries2.glb',
+            (object) => {
+                stationaries = object.scene
+                scene.add(stationaries);
+            },
+        );
+
+        var stationaries_2 = null;
+        loader.load(
+            'assets/stationaries3.glb',
+            (object) => {
+                stationaries_2 = object.scene
+                stationaries_2.position.set(-1000, -1000, 0)
+                scene.add(stationaries_2);
+            },
+        );
+
+        var arm_1 = null;
+        loader.load(
+            'assets/arm1.glb',
+            (object) => {
+                arm_1 = object.scene
+                arm_1.position.set(-1000, -1000, 0)
+                scene.add(arm_1);
+            },
+        );
+
+        var arm_2 = null;
+        loader.load(
+            'assets/arm2.glb',
+            (object) => {
+                arm_2 = object.scene
+                arm_2.position.set(-1000, -1000, 0)
+                scene.add(arm_2);
+            },
+        );
+
+        var factory_door_l = null;
+        loader.load(
+            'assets/factory_door3.glb',
+            (object) => {
+                factory_door_l = object.scene
+                factory_door_l.position.set(-0.72, 0, 4);
+                factory_door_l.scale.set(1.5, 1.5, 1.5);
+                scene.add(factory_door_l);
+            },
+        );
+
+        var factory_door_r = null;
+        loader.load(
+            'assets/factory_door4.glb',
+            (object) => {
+                factory_door_r = object.scene;
+                factory_door_r.position.set(0.72, 0, 4);
+                factory_door_r.scale.set(1.5, 1.5, 1.5);
+                scene.add(factory_door_r);
+            },
+        );
+
+        var entire_starship = null;
+        loader.load(
+            'assets/entire_starship.glb',
+            (object) => {
+                entire_starship = object.scene;
+                scene.add(entire_starship);
+            },
+        );
+
+        var seperated_starship = null;
+        loader.load(
+            'assets/seperated_starship.glb',
+            (object) => {
+                seperated_starship = object.scene;
+                seperated_starship.position.set(-1000, -1000, 0);
+
+                seperated_starship.rotation.set(18 * degree , 180 * degree, 85 * degree)
+                scene.add(seperated_starship);
+            },
+        );
+
+        var seperated_head = null;
+        loader.load(
+            'assets/head.glb',
+            (object) => {
+                seperated_head = object.scene;
+                seperated_head.position.set(-1000, -1000, 0);
+                scene.add(seperated_head);
+            },
+        );
+
+        var seperated_booster = null;
+        loader.load(
+            'assets/booster.glb',
+            (object) => {
+                seperated_booster = object.scene;
+                seperated_booster.position.set(-1000, -1000, 0);
+                scene.add(seperated_booster);
+            },
+        );
+
+
+        // define animation control functions
+        function cameraAnimationSceneOne(time) {
+            camera.position.z = 4.5 - Math.log10(time + 1) * 0.8;
+            camera.setFocalLength(Math.max(15 - (time / 5) * 3, 12));
+            camera.rotation.x = Math.min(-0.28 + Math.log10(2 * (time / 5 * 10 + 0.5)) * 0.34, 0.18);
+            camera.position.y = 0.2;
+            camera.position.x = 0;
+            cameraShake(time);
+        }
+
+        function doorAnimation(time){
+            factory_door_l.rotation.y = 0 + Math.min((time / 5), 180)
+            factory_door_r.rotation.y = 0 - Math.min((time / 5), 180)
+        }
+        
+
+
+        function animate() {
+            requestAnimationFrame(animate);
+            objectAnimations();
+            renderer.render(scene, camera);
+        }
+
+        function objectAnimations(){
+            time = time % interval
+
+            if(time < 12){
+                if(time < 0.05){
+                    hideSceneFour()
+                    resetSceneOne()
+                }
+                cameraAnimationSceneOne(time);
+                doorAnimation(time);
+                particleSystem(time);
+                if(time > 3.4) takeOff(time);
+            }
+
+            
+            
+
+            if(time >= 12 && time < 14.5){
+                if(Scene == 1){
+                    hideSceneOne()
+                    Scene ++
+                    loadSceneTwo()
+                }
+                animationSceneTwo(time);
+            }
+
+            if(time >= 14.5 && time < 25){
+                if(Scene == 2){
+                    hideSceneTwo()
+                    Scene ++
+                    loadSceneThree()
+                }
+                animationSceneThree(time)
+            }
+
+            if(time >= 25){
+                if(Scene == 3){
+                    hideSceneThree()
+                    Scene ++
+                    loadSceneFour()
+                }
+                animationSceneFour(time)
+            }
+
+
+
+            exhaust2.update(0.01)
+            vent.update(0.02)
+            exhaust.update(0.01)
+
+            
+            if(!paused) time += 0.005 * speed;
+        }
+
+        function particleSystem(time){
+            const pos = new THREE.Vector3(0, 0.6 + 0.03 * Math.pow(time-3, 3), -1);
+            if (time > 7) {
+                pos.x = 0.02 * Math.pow(time-7, 3);
+            }
+            if(time < 4 && Math.random()<0.8) vent.emit(new THREE.Vector3(0, 0.6, -1), new THREE.Vector3(0,-0.2,0), 3, 30);
+            if(time > 3.4 && Math.random()<0.6) exhaust.emit(pos, new THREE.Vector3(0,-2,0), 0.8, 50);
+
+            if(time >12){
+                exhaust.emit(seperated_starship.position, new THREE.Vector3(-2,0,-1), 0.8, 50);
+            }
+        }
+
+        function cameraShake(time){
+            if(time > 3 && time < 9){
+                const shakeAmount = 0.01 - 0.0025*(Math.abs(time - 4.5));
+                camera.position.x += (Math.random() - 0.5) * shakeAmount;
+                camera.position.y += (Math.random() - 0.5) * shakeAmount;
+            }
+        }
+
+        function takeOff(time){
+            light4.position.set(entire_starship.position.x,entire_starship.position.y-0.2,entire_starship.position.z)
+            if(time < 4.5){
+                light4.intensity = (time-3.4) * 50
+            }
+
+            entire_starship.position.y = 0.03 * Math.pow(time-3, 3);
+            if (time > 7) {
+                entire_starship.position.x = 0.02 * Math.pow(time-7, 3);
+
+                if (time < 10) {
+                    entire_starship.rotation.z = - 0.01 * Math.pow(time-7, 2);
+                }
+            }
+
+            
+        }
+
+        function resetSceneOne(){
+            entire_starship.position.set(0, 0, 0);
+            entire_starship.rotation.set(0, 0, 0);
+            stationaries.position.set(0, 0, 0)
+            Scene = 1
+            camera.rotation.y = 0;
+            camera.rotation.z = 0;
+            light2.position.set(5, 1, 3);
+            light3.position.set(5, 1, 1);
+            light4.intensity = 0;
+            skyMeshOne.position.set(0, 0, 5);
+            skyMeshTwo.position.set(-1000, -1000, -1005);
+            factory_door_l.position.set(-0.72, 0, 4);
+            factory_door_r.position.set(0.72, 0, 4);
+        }
+
+        function hideSceneOne(){
+            stationaries.position.set(-1000, -1000, -1000);
+            entire_starship.position.set(-1000, -1000, -1000);
+            skyMeshOne.position.set(-1000, -1000, -1005);
+            skyMeshTwo.position.set(0, 0, 5);
+            light4.intensity = 0;
+            factory_door_l.position.set(-1000, -1000, -1000);
+            factory_door_r.position.set(-1000, -1000, -1000);
+
+        }
+
+        function loadSceneTwo(){
+            seperated_starship.position.set(-15, 0.2, 0);
+            light2.position.set(2, 3, 4);
+            light3.position.set(2, 6, 4);
+            camera.rotation.z = 60 * degree
+        }
+
+        function hideSceneTwo(){
+            seperated_starship.rotation.set(18 * degree , 180 * degree, 85 * degree)
+            seperated_starship.position.set(-1000, -1000, 0)
+            camera.rotation.z = 0
+        }
+
+        function hideSceneThree(){
+            seperated_head.position.set(-1000, -1000,0)
+            seperated_booster.rotation.set(0, 0, 0)
+        }
+
+
+        function hideSceneFour(){
+            stationaries_2.position.set(-1000, -1000, 0)
+            arm_1.position.set(-1000, -1000, 0)
+            arm_1.rotation.y = 0
+            arm_2.position.set(-1000, -1000, 0)
+            arm_2.rotation.y = 0
+            seperated_booster.position.set(-1000, -1000,0)
+            seperated_booster.rotation.set(0, 0, 0)
+            light4.position.set(-1000, -1000, 0)
+        }
+
+        function animationSceneTwo(time){
+            const phase_time = time - 12;
+            //seperated_starship.position.set(0,0,0)
+            seperated_starship.position.x += 0.07
+            seperated_starship.position.z = 0.022 * Math.pow(time-3, 2) - 2
+            seperated_starship.rotation.y -= 0.04 * degree
+            
+            camera.lookAt(seperated_starship.position)
+            
+        }
+
+
+        function loadSceneThree(){
+            seperated_head.position.set(0, 0, 0)
+            seperated_booster.position.set(0, 0, 0)
+            camera.position.set(0.1, 2, 0.25)
+            camera.lookAt(0.1, 0, 0.25)
+        }
+
+
+        function animationSceneThree(time){
+            const phase_time = time - 14.5
+            seperated_booster.rotation.z -= 0.01 * degree
+            seperated_booster.position.x = -0.0002 * Math.pow(phase_time, 4)
+            seperated_booster.position.y = -0.008 * Math.pow(phase_time, 3)
+            seperated_booster.position.z = 0.001 * Math.pow(phase_time, 3)
+        }
+
+        function loadSceneFour(){
+            stationaries_2.position.set(0, 0, 0)
+            seperated_booster.position.set(0.2, 10, 0)
+            arm_1.position.set(-0.18, 0, 0.05)
+            arm_2.position.set(0.18, 0, -0.05)
+            camera.position.set(4.2, -0.2, 1.4)
+            light4.intensity = 48;
+            //camera.position.set(-1, -0.5, -0.1)
+            //camera.lookAt(0, -0.5, 0.2)
+            camera.setFocalLength(14);
+        }
+
+        function animationSceneFour(time){
+            const phase_time = time - 25
+
+            if(phase_time > 6){
+                arm_1.rotation.y = Math.min(45, (phase_time-6) / 3 * 45) * degree
+                arm_2.rotation.y = -Math.min(46, (phase_time-6) / 3 * 46) * degree
+            }
+            
+            seperated_booster.position.y = -1.44 + (Math.max(-1.44, 10 / ((phase_time-3) * 0.9 + 3) - 2.4) + 1.44) * 2
+            seperated_booster.position.z = 0.5 + ((0.5 * (0.5 + Math.max(0.5, 10 / ((phase_time-3) * 1.3 + 6) - 0.125)))-0.5) * 2
+            seperated_booster.rotation.x = Math.max(0, (8 - phase_time) * degree)
+            camera.lookAt(seperated_booster.position.x, seperated_booster.position.y + 1, seperated_booster.position.z)
+            const pos = seperated_booster.position
+            if(phase_time < 12){
+                exhaust2.emit(pos, new THREE.Vector3(0,-2,0), 0.6, 20);
+                light4.position.set(seperated_booster.position.x,seperated_booster.position.y-0.2,seperated_booster.position.z)
+                light4.intensity = 48 - 4 * phase_time
+            }
+        }
+
+
+
+        animate();
+
+        // Render
+        renderer.render(scene, camera);
+
+
+
+
+
+        // Systems
+        function createParticleSystem(color, size, opacity=0.8) {
+            const geom = new THREE.BufferGeometry();
+            const pos = new Float32Array(15000);
+            geom.setAttribute('position', new THREE.BufferAttribute(pos,3));
+            const mat = new THREE.PointsMaterial({color, size, transparent:true, opacity, depthWrite:false});
+            const points = new THREE.Points(geom, mat);
+            scene.add(points);
+            let particles = [];
+            let idx = 0;
+            const posArray = pos;
+
+            return {
+                emit(pos, vel, life=4, count=15) {
+                    for(let i=0; i<count; i++){
+                        particles.push({
+                            p: pos.clone().add(new THREE.Vector3((Math.random()-0.5)*0.1,0,(Math.random()-0.5)*0.1)),
+                            v: vel.clone().add(new THREE.Vector3((Math.random()-0.5)*0.4,0,(Math.random()-0.5)*0.6)),
+                            life: life + Math.random()*0.5
+                        });
+                    }
+                },
+                update(dt) {
+                    particles = particles.filter(p=> (p.life-=dt) > 0);
+                    particles.forEach(p=> p.p.addScaledVector(p.v, dt));
+
+                    let i=0;
+                    particles.forEach(p=>{
+                        posArray[i++] = p.p.x;
+                        posArray[i++] = p.p.y;
+                        posArray[i++] = p.p.z;
+                    });
+                    geom.setDrawRange(0, particles.length);
+                    geom.attributes.position.needsUpdate = true;
+                }
+            };
+        }
+
+    </script>
 </body>
 </html>
