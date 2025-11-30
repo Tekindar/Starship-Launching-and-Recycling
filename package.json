@@ -1,0 +1,13 @@
+{
+  "name": "ThreeJS",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "three": "^0.181.1",
+    "vite": "^7.2.2"
+  }
+}
