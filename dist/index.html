@@ -3,12 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ThreeJS Project</title>
-    <script>
-        window.location.href = "/test.html";
-    </script>
+    <title>Document</title>
+    <style>
+        *{margin:0; padding:0;}
+        html,body {width: 100%;height: 100%;overflow: hidden;}
+        #startButton, #launchButton {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 15px 30px;
+            font-size: 24px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 2px solid white;
+            cursor: pointer;
+            z-index: 100;
+            font-family: sans-serif;
+            transition: background-color 0.3s;
+        }
+        #startButton:hover, #launchButton:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        #launchButton {
+            top: 80%; /* Move to bottom area */
+            display: none; /* Hidden initially */
+        }
+        #viewControls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: none; /* Hidden initially, shown in Scene 3 */
+            z-index: 100;
+        }
+        .view-btn {
+            padding: 10px 20px;
+            margin-left: 10px;
+            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: 1px solid white;
+            cursor: pointer;
+            font-family: sans-serif;
+            transition: background-color 0.3s;
+        }
+        .view-btn:hover, .view-btn.active {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+  <script type="module" crossorigin src="/test.html/assets/index-CjF1_4RK.js"></script>
 </head>
 <body>
-    <p>Redirecting to <a href="/test.html">test.html</a>...</p>
+    <div id="startButton">Visit The Launch Site</div>
+    <div id="launchButton">Launch!</div>
+    <div id="viewControls">
+        <button id="boosterViewBtn" class="view-btn">Booster View</button>
+        <button id="shipViewBtn" class="view-btn active">Ship View</button>
+    </div>
+    
+    <!-- Success Modal -->
+    <div id="successModal" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 200;">
+        <div style="background: rgba(0,0,0,0.8); padding: 40px; border: 2px solid white; color: white;">
+            <h1 style="margin-bottom: 20px; font-family: sans-serif;">SUCCESS LANDING</h1>
+            <button id="restartBtn" style="padding: 15px 30px; font-size: 20px; cursor: pointer; background: white; border: none; font-family: sans-serif;">Restart</button>
+        </div>
+    </div>
+
 </body>
 </html>
