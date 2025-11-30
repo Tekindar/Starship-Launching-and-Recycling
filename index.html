@@ -154,7 +154,7 @@
         scene.add(shockwaveMesh);
 
         const textureLoader = new THREE.TextureLoader();
-        const skyTexture = textureLoader.load('sky.jpeg');
+        const skyTexture = textureLoader.load('assets/sky.jpeg');
         const skyMaterialOne = new THREE.MeshStandardMaterial({ //color: 0xff000, 
             map: skyTexture, side: THREE.BackSide, emissive: 0xA1E9F7, emissiveIntensity: 0.8});
 
@@ -165,7 +165,7 @@
         scene.add(skyMeshOne);
 
 
-        const skyTextureTwo = textureLoader.load('sky2.jpeg');
+        const skyTextureTwo = textureLoader.load('assets/sky2.jpeg');
         const skyMaterialTwo = new THREE.MeshStandardMaterial({ //color: 0xff000, 
             map: skyTextureTwo, side: THREE.BackSide, emissive: 0xA1E9F7, emissiveIntensity: 0.2});
 
@@ -186,7 +186,7 @@
 
         var stationaries = null;
         loader.load(
-            'stationaries2.glb',
+            'assets/stationaries2.glb',
             (object) => {
                 stationaries = object.scene
                 scene.add(stationaries);
@@ -195,7 +195,7 @@
 
         var factory_door_l = null;
         loader.load(
-            'factory_door3.glb',
+            'assets/factory_door3.glb',
             (object) => {
                 factory_door_l = object.scene
                 factory_door_l.position.set(-0.72, 0, 4);
@@ -206,7 +206,7 @@
 
         var factory_door_r = null;
         loader.load(
-            'factory_door4.glb',
+            'assets/factory_door4.glb',
             (object) => {
                 factory_door_r = object.scene;
                 factory_door_r.position.set(0.72, 0, 4);
@@ -217,7 +217,7 @@
 
         var entire_starship = null;
         loader.load(
-            'entire_starship.glb',
+            'assets/entire_starship.glb',
             (object) => {
                 entire_starship = object.scene;
                 scene.add(entire_starship);
@@ -227,7 +227,7 @@
         var seperated_starship = null;
         var seperated_tail = null;
         loader.load(
-            'seperated_starship.glb',
+            'assets/seperated_starship.glb',
             (object) => {
                 seperated_starship = object.scene;
                 seperated_tail = object.scene.getObjectByName('tail')
@@ -240,7 +240,7 @@
         // --- Additional Loaders from Original Scene (for Scenes 3 & 4) ---
         var stationaries_2 = null;
         loader.load(
-            'stationaries3.glb',
+            'assets/stationaries3.glb',
             (object) => {
                 stationaries_2 = object.scene
                 stationaries_2.position.set(-1000, -1000, 0)
@@ -250,7 +250,7 @@
 
         var arm_1 = null;
         loader.load(
-            'arm1.glb',
+            'assets/arm1.glb',
             (object) => {
                 arm_1 = object.scene
                 arm_1.position.set(-1000, -1000, 0)
@@ -260,7 +260,7 @@
 
         var arm_2 = null;
         loader.load(
-            'arm2.glb',
+            'assets/arm2.glb',
             (object) => {
                 arm_2 = object.scene
                 arm_2.position.set(-1000, -1000, 0)
@@ -270,7 +270,7 @@
         
         var seperated_head = null;
         loader.load(
-            'head.glb',
+            'assets/head.glb',
             (object) => {
                 seperated_head = object.scene;
                 seperated_head.position.set(-1000, -1000, 0);
@@ -280,7 +280,7 @@
 
         var seperated_booster = null;
         loader.load(
-            'booster.glb',
+            'assets/booster.glb',
             (object) => {
                 seperated_booster = object.scene;
                 seperated_booster.position.set(-1000, -1000, 0);
